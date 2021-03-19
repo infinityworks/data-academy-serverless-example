@@ -26,7 +26,7 @@ package:
 
 functions:
   example-service-1:
-    handler: src/example-service-1/handler.start
+    handler: src/example-service-1/handler.handle
     timeout: 300
     layers:
       - !Ref PythonRequirementsLambdaLayer
@@ -43,11 +43,11 @@ functions:
           - s3:GetObject
           - s3:ListBucket
         Resource:
-          - !GetAtt exampleBucket.Arn
-          - !Join [ "", [ !GetAtt exampleBucket.Arn, /* ] ]
+          - arn:aws:s3:::my-bucket
+          - arn:aws:s3:::my-bucket/*
 
   example-service-2:
-    handler: src/example-service-2/handler.start
+    handler: src/example-service-2/handler.handle
     timeout: 300
     layers:
       - !Ref PythonRequirementsLambdaLayer

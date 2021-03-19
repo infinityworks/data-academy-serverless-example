@@ -7,9 +7,20 @@ A repository to demonstrate a simple serverless repo for the data academy.
 
     > `Node.js` is a free, open-sourced, cross-platform JavaScript run-time environment that lets developers write command line tools and server-side scripts outside of a browser.
 
-1. In your repository, Check if `npm` is installed by running `npm -v`. Run `npm init`.
+    If you're running your project in a development container, skip this step and run the following commands on the terminal:
+
+    ```sh
+    sudo apt-get update
+    sudo apt-get upgrade
+    curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+    sudo apt-get install -y nodejs
+    ```
+
+1. In your repository, Check if `npm` is installed by running `npm -v`.
 
    > `npm` (originally short for `Node Package Manager`) is a package manager for the JavaScript programming language. We need this so that we can install the `serverless` package, along with other potentially useful packages.
+
+1. Run `npm init` to initialise `npm` in your project.
 
 1. Run `npm install serverless`. This will install the `serverless` package for us.
 
@@ -17,17 +28,18 @@ A repository to demonstrate a simple serverless repo for the data academy.
 
 ### Setting up serverless
 
-1. Run `serverless` or `sls` as a short-hand.
+1. Run `npx serverless` or `npx sls` as a short-hand.
 1. Select `AWS Python`.
-1. Give the service a name.
+1. Give the lambda service a name (such as `etl`).
 1. Select `n` for allowing monitoring services.
+1. Select `n` for setting AWS credentials.
 
-This will generate a new directory, containing an `.npmignore`, `handler.py` and `serverless.yml` file. However, this repository is structured slightly differently by removing `.npmignore` and moving `serverless.yml` to the top-level directory. This is so you can define multiple services for a project. You can see this with the two example service directories that have been setup inside the `src` folder.
+When you run the `serverless` command, it will assume you are creating a new project, and so will generate a new directory, containing an `.npmignore`, `handler.py` and `serverless.yml` file. However, we already have a project and so will need to rejig the files to make it suit our needs. Move the `serverless.yml` to the top-level directory. This is so you can define multiple Lambda services for a project. You can see this with the two example Lambda service directories that have been setup inside the `src` folder. Move the newly created directory into your `src` directory and delete `.npmignore`.
 
-- The `handler.py` file is the entry point for your service.
-- The `serverless.yml` file is used to define the infrastructure of your service(s).
+- The `handler.py` file is the entry point for your Lambda service.
+- The `serverless.yml` file is used to define the infrastructure of your overall service.
 
-Imagine each service is just a regular Python application which lives inside AWS Lambda. Inside each of our example service directories, you can define as many Python files as you want, as long as you specify where the starting point of your service is. You can also define a `requirements.txt` for each service too.
+Imagine each Lambda service is just a regular Python application which lives inside AWS Lambda. Inside each of our example Lambda service directories, you can define as many Python files as you want, as long as you specify where the starting point of your service is.
 
 ### How to define a Lambda as infrastructure
 
@@ -43,19 +55,27 @@ This tells us that we have defined a `Lambda` function with the name `example-se
 
 ### Deploying your application
 
-Assuming you can access AWS through the CLI, you can deploy your application to AWS using the following commands:
+**Please read the `Current problems and workarounds` section after this.**
 
-```sh
-sls package
-```
-
-This command will package your entire infrastructure into the `.serverless` directory by default and make it ready for deployment.
+Assuming you can access AWS through the CLI, you can deploy your application to AWS using the following command:
 
 ```sh
 sls deploy
 ```
 
 This command will deploy your entire service via `CloudFormation`. Run this command when you have made infrastructure changes (i.e., you edited `serverless.yml`).
+
+### Applying permission boundaries
+
+To be able to use `serverless` to deploy services like `Lambda`, you will need to apply the following to the `provider` section of your `serverless.yml`:
+
+```yml
+provider
+  role:
+      permissionsBoundary: arn:aws:iam::xxxxxxxxxxxx:policy/xxxxxxxxxx
+```
+
+Your instructor will provide you the correct `ARN` to use.
 
 ### Current problems and workarounds
 
@@ -77,6 +97,8 @@ When installed, we can run `deploy.sh` to automate deployment steps for us:
 chmod +x deploy.sh          # set execution permissions
 ./deploy.sh [profile-name]  # run deployment
 ```
+
+When running `ssocred` on Windows, if you get an error akin to `no such file or directory, open 'C:\Users\user\.aws\credentials'`, run `touch ~/.aws/credentials`.
 
 ### Example output
 
@@ -103,4 +125,4 @@ layers:
 
 ### Tearing down a serverless application
 
-To remove anything you have deployed with serverless, run `sls remove --aws-profile [name-of-profile]`.
+To remove anything you have deployed with serverless, run `npx sls remove --aws-profile [name-of-profile]`.
