@@ -71,12 +71,11 @@ AWS SSO does not require this file, and so the deploy command will fail to work 
 
 To install locally, run `npm install aws-sso-credentials-getter`.
 
-When installed, we can run the following commands to now get the deploy to work for us:
+When installed, we can run `deploy.sh` to automate deployment steps for us:
 
 ```sh
-$ aws sso login --profile [name-of-profile]   # make sure we are logged in first
-$ npx ssocred [name-of-profile]               # generate temporary local credentials
-$ sls deploy --aws-profile [name-of-profile]  # deploy serverless application to AWS
+chmod +x deploy.sh          # set execution permissions
+./deploy.sh [profile-name]  # run deployment
 ```
 
 ### Example output
